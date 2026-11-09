@@ -1,0 +1,438 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #0a0a0b;
+  --ink-2: #111113;
+  --bone: #ece8e1;
+  --mute: #8b8780;
+  --line: rgba(236, 232, 225, 0.12);
+  --accent: #ff5a1f;
+  --gutter: clamp(1rem, 2.4vw, 2.25rem);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-bone: var(--bone);
+  --color-mute: var(--mute);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument);
+}
+
+/* ---------- Base ---------- */
+html {
+  background: var(--ink);
+  color: var(--bone);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.px-gutter {
+  padding-inline: var(--gutter);
+}
+
+.serif {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.mono {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hairline {
+  height: 1px;
+  background: var(--line);
+  transform-origin: left center;
+}
+
+/* Fluid display sizes */
+.text-display {
+  font-size: clamp(3.25rem, 10.5vw, 11rem);
+  line-height: 0.88;
+  letter-spacing: -0.055em;
+  font-weight: 500;
+}
+
+.text-headline {
+  font-size: clamp(2.5rem, 7vw, 7.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  font-weight: 500;
+}
+
+.text-lede {
+  font-size: clamp(1.6rem, 3.6vw, 3.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  font-weight: 400;
+}
+
+/* SplitText masks: keep descenders visible */
+.split-line {
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+
+/* ---------- Grain overlay ---------- */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: -50%;
+  z-index: 90;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
+}
+
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -4%); }
+  60% { transform: translate(-4%, -2%); }
+  80% { transform: translate(3%, 4%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ---------- Custom cursor ---------- */
+.cursor {
+  display: none;
+}
+
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+
+html.has-cursor .cursor {
+  display: block;
+}
+
+.c-trail {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 198;
+  pointer-events: none;
+}
+
+.c-blob {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, width, height;
+}
+
+.c-label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 201;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+}
+
+.c-label-inner {
+  position: absolute;
+  left: -64px;
+  top: -64px;
+  width: 128px;
+  height: 128px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(10, 10, 11, 0.42);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+  backdrop-filter: blur(10px) saturate(1.4);
+  box-shadow:
+    inset 0 0 0 1px rgba(236, 232, 225, 0.14),
+    0 20px 60px -20px rgba(0, 0, 0, 0.6);
+  transform: scale(0);
+}
+
+.c-label-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: c-spin 9s linear infinite;
+}
+
+.c-label-ring text {
+  fill: var(--bone);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+}
+
+.c-label-core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--ink);
+  box-shadow: 0 0 40px -6px rgba(255, 90, 31, 0.8);
+}
+
+.c-label-core svg {
+  width: 22px;
+  height: 22px;
+}
+
+.c-ripple {
+  position: fixed;
+  z-index: 199;
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  pointer-events: none;
+}
+
+@keyframes c-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Roll text hover ---------- */
+.roll {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.roll > span {
+  display: block;
+  transition: transform 0.65s var(--ease-out);
+}
+
+.roll > span + span {
+  position: absolute;
+  inset: 0;
+  transform: translateY(105%);
+}
+
+a:hover .roll > span:first-child,
+button:hover .roll > span:first-child,
+.roll:hover > span:first-child {
+  transform: translateY(-105%);
+}
+
+a:hover .roll > span + span,
+button:hover .roll > span + span,
+.roll:hover > span + span {
+  transform: translateY(0);
+}
+
+/* Underline that draws in */
+.u-line {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.7s var(--ease-out);
+}
+
+a:hover .u-line,
+.u-line:hover {
+  background-size: 100% 1px;
+  background-position: 0% 100%;
+}
+
+/* ---------- Page transition curtain ---------- */
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: flex;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.curtain-panel {
+  flex: 1;
+  height: 100%;
+  background: var(--bone);
+  transform: scaleY(0);
+  margin-right: -1px;
+  /* Hide sub-pixel seams between scaled panels */
+  box-shadow: 0 0 0 1px var(--bone);
+}
+
+.curtain-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  overflow: hidden;
+}
+
+/* ---------- Preloader ---------- */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  background: var(--ink);
+  clip-path: inset(0 0 0 0);
+}
+
+/* ---------- Work list ---------- */
+.work-list:hover .work-row:not(:hover) {
+  opacity: 0.28;
+}
+
+.work-row {
+  transition: opacity 0.5s var(--ease-out);
+}
+
+.work-row .work-title {
+  transition:
+    transform 0.8s var(--ease-out),
+    color 0.5s;
+}
+
+.work-row:hover .work-title {
+  transform: translateX(clamp(0.5rem, 2vw, 2rem));
+}
+
+.work-row .work-arrow {
+  transition:
+    transform 0.8s var(--ease-out),
+    opacity 0.5s;
+  transform: translateX(-1rem) rotate(-45deg);
+  opacity: 0;
+}
+
+.work-row:hover .work-arrow {
+  transform: translateX(0) rotate(-45deg);
+  opacity: 1;
+}
+
+/* ---------- Marquee ---------- */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .grain {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Hero scroll cue ---------- */
+@keyframes scroll-cue {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
+
+/* ---------- Notched button (Menu / Close / CTAs) ----------
+ * The element itself is the 1px "border" (currentColor); ::before is the face.
+ * Hover drains the face so the label inverts.
+ */
+.btn-notch {
+  --n: 9px;
+  --btn-bg: var(--ink);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: currentColor;
+  clip-path: polygon(0 0, calc(100% - var(--n)) 0, 100% var(--n), 100% 100%, var(--n) 100%, 0 calc(100% - var(--n)));
+}
+
+.btn-notch::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: var(--btn-bg);
+  clip-path: polygon(0 0, calc(100% - var(--n) + 0.5px) 0, 100% calc(var(--n) - 0.5px), 100% 100%, calc(var(--n) - 0.5px) 100%, 0 calc(100% - var(--n) + 0.5px));
+  transform-origin: 50% 0%;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.btn-notch > * {
+  position: relative;
+  transition: color 0.35s;
+}
+
+.btn-notch:hover::before,
+.btn-notch:focus-visible::before {
+  transform: scaleY(0);
+}
+
+.btn-notch:hover > *,
+.btn-notch:focus-visible > * {
+  color: var(--btn-bg);
+}
+
+.btn-notch:focus-visible {
+  outline: none;
+}
